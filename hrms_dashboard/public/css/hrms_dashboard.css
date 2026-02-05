@@ -1,0 +1,603 @@
+/* ========================================
+   HRMS DASHBOARD - EXACT REFERENCE MATCH
+   ======================================== */
+
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ========================================
+   GLOBAL STYLES
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.hrms-dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ========================================
+   DASHBOARD LAYOUT - 3 COLUMNS
+   ======================================== */
+.dashboard-row {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.row-top {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.row-middle {
+    grid-template-columns: 280px 1fr 280px;
+}
+
+.middle-column,
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ========================================
+   WIDGET CARDS WITH HOVER ZOOM EFFECTS
+   ======================================== */
+.hrms-widget {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.hrms-widget:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.widget-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 12px 0;
+}
+
+.view-link {
+    color: #95a5a6;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    font-size: 18px;
+    display: inline-block;
+}
+
+.view-link:hover {
+    color: #5c6ac4;
+    transform: translateX(5px) scale(1.2) rotate(15deg);
+}
+
+.widget-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.widget-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 12px;
+    opacity: 0.8;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.widget-icon:hover {
+    transform: scale(1.15);
+    opacity: 1;
+    animation: pulse 1s infinite;
+}
+
+.widget-icon-small {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+    opacity: 0.7;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.widget-icon-small:hover {
+    transform: scale(1.2);
+    opacity: 1;
+    animation: pulse 1s infinite;
+}
+
+.widget-message {
+    color: #7f8c8d;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ========================================
+   REVIEW WIDGET
+   ======================================== */
+.review-widget {
+    background: #ffffff;
+}
+
+/* ========================================
+   ATTENDANCE WIDGET (Who is in?)
+   ======================================== */
+.attendance-widget .widget-content {
+    align-items: stretch;
+    text-align: left;
+}
+
+.attendance-status {
+    width: 100%;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.status-item:last-of-type {
+    border-bottom: none;
+}
+
+.status-label {
+    font-size: 13px;
+    color: #555;
+}
+
+.status-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.status-badge:hover {
+    transform: scale(1.15);
+    cursor: pointer;
+}
+
+.badge-yellow {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-red {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.attendance-message {
+    margin-top: 10px;
+    color: #95a5a6;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* ========================================
+   CLOCK WIDGET
+   ======================================== */
+.clock-widget {
+    background: linear-gradient(135deg, #5c6ac4 0%, #4a5ab3 100%);
+    color: #ffffff;
+}
+
+.clock-widget .widget-title,
+.clock-widget .widget-subtitle {
+    color: #ffffff;
+}
+
+.widget-subtitle {
+    font-size: 11px;
+    font-weight: 400;
+    margin-bottom: 12px;
+    opacity: 0.9;
+}
+
+.timer-display {
+    margin: 12px 0;
+}
+
+.timer {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.widget-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   BUTTONS WITH HOVER ZOOM EFFECTS
+   ======================================== */
+.btn-primary,
+.btn-secondary,
+.btn-link,
+.btn-apply {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-primary {
+    background: #5c6ac4;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: #4a5ab3;
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(92, 106, 196, 0.3);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+.btn-link {
+    background: transparent;
+    color: #5c6ac4;
+    padding: 4px 8px;
+}
+
+.btn-link:hover {
+    background: #f0f0f0;
+    transform: scale(1.08);
+}
+
+.btn-apply {
+    background: transparent;
+    color: #5c6ac4;
+    border: 1px solid #5c6ac4;
+    padding: 4px 12px;
+    font-size: 11px;
+}
+
+.btn-apply:hover {
+    background: #5c6ac4;
+    color: #ffffff;
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(92, 106, 196, 0.3);
+}
+
+/* ========================================
+   PAYSLIP WIDGET
+   ======================================== */
+.payslip-widget {
+    min-height: 400px;
+}
+
+.payslip-chart {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 15px auto;
+}
+
+.chart-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.month {
+    display: block;
+    font-size: 11px;
+    color: #7f8c8d;
+    margin-bottom: 4px;
+}
+
+.paid-days {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+}
+
+.paid-days small {
+    font-size: 10px;
+    font-weight: 400;
+    color: #7f8c8d;
+}
+
+.payslip-breakdown {
+    width: 100%;
+    margin: 15px 0;
+}
+
+.breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.breakdown-row:last-child {
+    border-bottom: none;
+}
+
+.breakdown-row .label {
+    color: #7f8c8d;
+}
+
+.breakdown-row .value {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* ========================================
+   QUICK ACCESS WIDGET
+   ======================================== */
+.quick-access-widget {
+    background: #ffffff;
+}
+
+.quick-access-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quick-access-item:hover {
+    background: #e9ecef;
+    transform: scale(1.03) translateX(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quick-access-item strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.item-note {
+    font-size: 11px;
+    color: #95a5a6;
+    margin: 4px 0 0 0;
+}
+
+/* ========================================
+   HOLIDAYS WIDGET
+   ======================================== */
+.holidays-widget .widget-content {
+    align-items: stretch;
+}
+
+.holiday-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.holiday-item:hover {
+    transform: translateX(5px);
+    background: #f9fafb;
+    padding-left: 8px;
+    border-radius: 4px;
+}
+
+.holiday-item:last-child {
+    border-bottom: none;
+}
+
+.holiday-info {
+    flex: 1;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.holiday-info strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.holiday-name {
+    color: #7f8c8d;
+}
+
+/* ========================================
+   TRACK WIDGET
+   ======================================== */
+.track-widget {
+    background: #ffffff;
+}
+
+/* ========================================
+   LEAVE WIDGET
+   ======================================== */
+.leave-widget {
+    background: #ffffff;
+}
+
+/* ========================================
+   POI & IT WIDGETS
+   ======================================== */
+.poi-widget,
+.it-widget {
+    background: #ffffff;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 1024px) {
+    .row-middle {
+        grid-template-columns: 1fr;
+    }
+
+    .middle-column,
+    .right-column {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .row-top {
+        grid-template-columns: 1fr;
+    }
+
+    .timer {
+        font-size: 28px;
+    }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1.15);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.hrms-widget {
+    animation: fadeIn 0.3s ease;
+}
+
+/* ========================================
+   SIDEBAR MENU ICON COLORS
+   ======================================== */
+
+/* Customize HRMS Dashboard workspace icon in sidebar */
+.workspace-sidebar-item[data-page-name="hrms-dashboard"] .sidebar-item-icon,
+.workspace-sidebar-item[data-page-name="HRMS Dashboard"] .sidebar-item-icon {
+    color: #5c6ac4 !important;
+    /* Purple/Blue color */
+}
+
+/* Active/Selected state for HRMS workspace */
+.workspace-sidebar-item.selected[data-page-name="hrms-dashboard"] .sidebar-item-icon,
+.workspace-sidebar-item.selected[data-page-name="HRMS Dashboard"] .sidebar-item-icon,
+.workspace-sidebar-item.active[data-page-name="hrms-dashboard"] .sidebar-item-icon,
+.workspace-sidebar-item.active[data-page-name="HRMS Dashboard"] .sidebar-item-icon {
+    color: #4a5ab3 !important;
+    /* Darker shade when active */
+}
+
+/* Hover state for HRMS workspace icon */
+.workspace-sidebar-item[data-page-name="hrms-dashboard"]:hover .sidebar-item-icon,
+.workspace-sidebar-item[data-page-name="HRMS Dashboard"]:hover .sidebar-item-icon {
+    color: #4a5ab3 !important;
+}
+
+/* Alternative: Target all sidebar icons globally */
+/* Uncomment these if you want to change ALL sidebar icons */
+/*
+.workspace-sidebar-item .sidebar-item-icon {
+    color: #5c6ac4 !important;
+}
+
+.workspace-sidebar-item.selected .sidebar-item-icon,
+.workspace-sidebar-item.active .sidebar-item-icon {
+    color: #4a5ab3 !important;
+}
+
+.workspace-sidebar-item:hover .sidebar-item-icon {
+    color: #4a5ab3 !important;
+}
+*/
+
+/* Customize specific workspace icons by name */
+.workspace-sidebar-item[data-page-name="hrms-dashboard"] svg,
+.workspace-sidebar-item[data-page-name="HRMS Dashboard"] svg {
+    fill: #5c6ac4 !important;
+    stroke: #5c6ac4 !important;
+}
+
+/* Icon size adjustments (optional) */
+.workspace-sidebar-item .sidebar-item-icon {
+    width: 20px;
+    height: 20px;
+}
