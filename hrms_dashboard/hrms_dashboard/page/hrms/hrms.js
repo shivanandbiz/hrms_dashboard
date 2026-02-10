@@ -26,8 +26,13 @@ frappe.pages['hrms'].on_page_load = function (wrapper) {
                         .appendTo('head');
                 }
 
-                // Load JS
-                $.getScript('/assets/hrms_dashboard/js/hrms_dashboard.js');
+                // Load JS and initialize dashboard after HTML is ready
+                $.getScript('/assets/hrms_dashboard/js/hrms_dashboard.js', function () {
+                    // Call initDashboard after script loads
+                    if (typeof initDashboard === 'function') {
+                        initDashboard();
+                    }
+                });
             }
         }
     });

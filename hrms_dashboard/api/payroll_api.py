@@ -93,29 +93,23 @@ def download_payslip(payslip_name=None):
         pdf = frappe.get_print(
             "Salary Slip",
             payslip_name,
-            print_format="Salary Slip",
+            print_format="Salary Slip Print Format",
             as_pdf=True
         )
         
-        # Save to file
-        file_name = f"Salary_Slip_{payslip_name}.pdf"
-        file_doc = frappe.get_doc({
-            "doctype": "File",
-            "file_name": file_name,
-            "content": pdf,
-            "is_private": 1,
-            "folder": "Home/Attachments"
-        })
-        file_doc.save()
+        # Return PDF as base64 for download
+        import base64
+        pdf_base64 = base64.b64encode(pdf).decode('utf-8')
         
         return {
             "success": True,
-            "file_url": file_doc.file_url,
-            "file_name": file_name
+            "pdf_data": pdf_base64,
+            "file_name": f"Salary_Slip_{payslip_name}.pdf"
         }
     except Exception as e:
         frappe.log_error(f"Error downloading payslip: {str(e)}")
         return {"error": str(e)}
+
 
 
 @frappe.whitelist()

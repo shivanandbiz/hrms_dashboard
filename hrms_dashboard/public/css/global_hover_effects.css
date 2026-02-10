@@ -2,6 +2,9 @@
    GLOBAL HOVER ZOOM EFFECTS FOR ERPNEXT
    Applied globally across entire ERPNext interface
    via HRMS Dashboard App
+   
+   NOTE: Button color/background changes removed
+   All other hover effects remain active
    ======================================== */
 
 /* Import Professional Fonts */
@@ -18,7 +21,7 @@
 .shortcut-widget-box,
 .number-card-container,
 .number-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+   transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 .widget:hover,
@@ -28,9 +31,9 @@
 .shortcut-widget-box:hover,
 .number-card-container:hover,
 .number-card:hover {
-    transform: scale(1.05) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-    z-index: 10;
+   transform: scale(1.05) !important;
+   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+   z-index: 10;
 }
 
 /* ========================================
@@ -40,16 +43,16 @@
 .list-row-container,
 .frappe-list .list-row,
 .web-list-item {
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .list-row:hover,
 .list-row-container:hover,
 .frappe-list .list-row:hover,
 .web-list-item:hover {
-    transform: scale(1.02) translateX(5px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-    background-color: #f9fafb !important;
+   transform: scale(1.02) translateX(5px) !important;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+   background-color: #f9fafb !important;
 }
 
 /* ========================================
@@ -60,7 +63,7 @@
 .dashboard-card,
 .kanban-card,
 .onboarding-step {
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+   transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 .card:hover,
@@ -68,12 +71,12 @@
 .dashboard-card:hover,
 .kanban-card:hover,
 .onboarding-step:hover {
-    transform: scale(1.03) !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+   transform: scale(1.03) !important;
+   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* ========================================
-   BUTTONS - ZOOM ON HOVER
+   BUTTONS - ZOOM ON HOVER (NO COLOR CHANGE)
    ======================================== */
 .btn,
 button,
@@ -86,7 +89,7 @@ button,
 .btn-info,
 .btn-sm,
 .btn-xs {
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .btn:hover,
@@ -100,8 +103,9 @@ button:hover,
 .btn-info:hover,
 .btn-sm:hover,
 .btn-xs:hover {
-    transform: scale(1.05) translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+   transform: scale(1.05) translateY(-2px) !important;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+   /* NO background-color or color changes - removed */
 }
 
 /* ========================================
@@ -117,7 +121,7 @@ input[type="time"],
 textarea,
 select,
 .input-with-feedback {
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .form-control:focus,
@@ -130,8 +134,8 @@ input[type="time"]:focus,
 textarea:focus,
 select:focus,
 .input-with-feedback:focus {
-    transform: scale(1.02) !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+   transform: scale(1.02) !important;
+   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
 }
 
 /* ========================================
@@ -141,14 +145,14 @@ select:focus,
 .standard-sidebar-item,
 .sidebar-item,
 .workspace-sidebar-item {
-    transition: transform 0.2s ease, background-color 0.2s ease !important;
+   transition: transform 0.2s ease, background-color 0.2s ease !important;
 }
 
 .desk-sidebar-item:hover,
 .standard-sidebar-item:hover,
 .sidebar-item:hover,
 .workspace-sidebar-item:hover {
-    transform: scale(1.05) translateX(8px) !important;
+   transform: scale(1.05) translateX(8px) !important;
 }
 
 /* ========================================
@@ -157,13 +161,13 @@ select:focus,
 .link-item,
 .module-link-item,
 .desk-sidebar .link-item {
-    transition: transform 0.2s ease, background-color 0.2s ease !important;
+   transition: transform 0.2s ease, background-color 0.2s ease !important;
 }
 
 .link-item:hover,
 .module-link-item:hover,
 .desk-sidebar .link-item:hover {
-    transform: scale(1.03) translateX(5px) !important;
+   transform: scale(1.03) translateX(5px) !important;
 }
 
 /* ========================================
@@ -175,7 +179,7 @@ svg.icon,
 .icon-xs,
 .octicon,
 .fa {
-    transition: transform 0.2s ease !important;
+   transition: transform 0.2s ease !important;
 }
 
 .icon:hover,
@@ -184,7 +188,7 @@ svg.icon:hover,
 .icon-xs:hover,
 .octicon:hover,
 .fa:hover {
-    transform: scale(1.2) !important;
+   transform: scale(1.2) !important;
 }
 
 /* ========================================
@@ -194,15 +198,15 @@ svg.icon:hover,
 .grid-item,
 .data-row,
 .grid-body .data-row {
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .grid-row:hover,
 .grid-item:hover,
 .data-row:hover,
 .grid-body .data-row:hover {
-    transform: scale(1.02) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+   transform: scale(1.02) !important;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* ========================================
@@ -211,14 +215,14 @@ svg.icon:hover,
 .dropdown-item,
 .dropdown-menu>li>a,
 .awesomplete>ul>li {
-    transition: transform 0.2s ease, background-color 0.2s ease !important;
+   transition: transform 0.2s ease, background-color 0.2s ease !important;
 }
 
 .dropdown-item:hover,
 .dropdown-menu>li>a:hover,
 .awesomplete>ul>li:hover {
-    transform: scale(1.03) translateX(5px) !important;
-    background-color: #f3f4f6 !important;
+   transform: scale(1.03) translateX(5px) !important;
+   background-color: #f3f4f6 !important;
 }
 
 /* ========================================
@@ -229,7 +233,7 @@ svg.icon:hover,
 .indicator-pill,
 .label,
 .tag {
-    transition: transform 0.2s ease !important;
+   transition: transform 0.2s ease !important;
 }
 
 .badge:hover,
@@ -237,7 +241,7 @@ svg.icon:hover,
 .indicator-pill:hover,
 .label:hover,
 .tag:hover {
-    transform: scale(1.1) !important;
+   transform: scale(1.1) !important;
 }
 
 /* ========================================
@@ -246,13 +250,13 @@ svg.icon:hover,
 .nav-tabs>li>a,
 .nav-pills>li>a,
 .tab-link {
-    transition: transform 0.2s ease !important;
+   transition: transform 0.2s ease !important;
 }
 
 .nav-tabs>li>a:hover,
 .nav-pills>li>a:hover,
 .tab-link:hover {
-    transform: scale(1.05) !important;
+   transform: scale(1.05) !important;
 }
 
 /* ========================================
@@ -261,19 +265,19 @@ svg.icon:hover,
 .modal-content,
 .modal-dialog,
 .msgprint-dialog {
-    animation: zoomIn 0.3s ease;
+   animation: zoomIn 0.3s ease;
 }
 
 @keyframes zoomIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
-    }
+   from {
+      transform: scale(0.9);
+      opacity: 0;
+   }
 
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
+   to {
+      transform: scale(1);
+      opacity: 1;
+   }
 }
 
 /* ========================================
@@ -282,14 +286,14 @@ svg.icon:hover,
 .shortcut,
 .widget-shortcut,
 .shortcut-widget {
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+   transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 .shortcut:hover,
 .widget-shortcut:hover,
 .shortcut-widget:hover {
-    transform: scale(1.08) translateY(-3px) !important;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
+   transform: scale(1.08) translateY(-3px) !important;
+   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* ========================================
@@ -298,14 +302,14 @@ svg.icon:hover,
 .chart-container,
 .dashboard-chart,
 .report-chart {
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+   transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 .chart-container:hover,
 .dashboard-chart:hover,
 .report-chart:hover {
-    transform: scale(1.02) !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+   transform: scale(1.02) !important;
+   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* ========================================
@@ -313,13 +317,13 @@ svg.icon:hover,
    ======================================== */
 .kanban-card-wrapper,
 .kanban-card-body {
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+   transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 .kanban-card-wrapper:hover,
 .kanban-card-body:hover {
-    transform: scale(1.03) translateY(-3px) !important;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12) !important;
+   transform: scale(1.03) translateY(-3px) !important;
+   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* ========================================
@@ -328,14 +332,14 @@ svg.icon:hover,
 .timeline-item,
 .comment-box,
 .activity-item {
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .timeline-item:hover,
 .comment-box:hover,
 .activity-item:hover {
-    transform: scale(1.02) translateX(5px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+   transform: scale(1.02) translateX(5px) !important;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* ========================================
@@ -344,14 +348,14 @@ svg.icon:hover,
 .attachment-row,
 .file-preview,
 .attachment {
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .attachment-row:hover,
 .file-preview:hover,
 .attachment:hover {
-    transform: scale(1.05) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+   transform: scale(1.05) !important;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* ========================================
@@ -360,13 +364,13 @@ svg.icon:hover,
 .navbar-nav>li>a,
 .nav-link,
 .navbar-item {
-    transition: transform 0.2s ease !important;
+   transition: transform 0.2s ease !important;
 }
 
 .navbar-nav>li>a:hover,
 .nav-link:hover,
 .navbar-item:hover {
-    transform: scale(1.05) !important;
+   transform: scale(1.05) !important;
 }
 
 /* ========================================
@@ -375,13 +379,13 @@ svg.icon:hover,
 .filter-button,
 .filter-pill,
 .filter-tag {
-    transition: transform 0.2s ease !important;
+   transition: transform 0.2s ease !important;
 }
 
 .filter-button:hover,
 .filter-pill:hover,
 .filter-tag:hover {
-    transform: scale(1.08) !important;
+   transform: scale(1.08) !important;
 }
 
 /* ========================================
@@ -390,14 +394,14 @@ svg.icon:hover,
 .page-head-content .btn,
 .actions-btn-group .btn,
 .menu-btn-group .btn {
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 .page-head-content .btn:hover,
 .actions-btn-group .btn:hover,
 .menu-btn-group .btn:hover {
-    transform: scale(1.08) translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+   transform: scale(1.08) translateY(-2px) !important;
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* ========================================
@@ -405,13 +409,13 @@ svg.icon:hover,
    ======================================== */
 .notification-item,
 .notification-message {
-    transition: transform 0.2s ease, background-color 0.2s ease !important;
+   transition: transform 0.2s ease, background-color 0.2s ease !important;
 }
 
 .notification-item:hover,
 .notification-message:hover {
-    transform: scale(1.02) translateX(5px) !important;
-    background-color: #f9fafb !important;
+   transform: scale(1.02) translateX(5px) !important;
+   background-color: #f9fafb !important;
 }
 
 /* ========================================
@@ -422,7 +426,7 @@ svg.icon:hover,
 .btn:disabled,
 .btn.disabled,
 button:disabled {
-    transform: none !important;
+   transform: none !important;
 }
 
 .disabled:hover,
@@ -430,54 +434,54 @@ button:disabled {
 .btn:disabled:hover,
 .btn.disabled:hover,
 button:disabled:hover {
-    transform: none !important;
-    box-shadow: none !important;
+   transform: none !important;
+   box-shadow: none !important;
 }
 
 /* ========================================
    ADDITIONAL ANIMATIONS
    ======================================== */
 @keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
+   from {
+      opacity: 0;
+      transform: translateX(-20px);
+   }
 
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+   to {
+      opacity: 1;
+      transform: translateX(0);
+   }
 }
 
 @keyframes pulse {
 
-    0%,
-    100% {
-        transform: scale(1);
-    }
+   0%,
+   100% {
+      transform: scale(1);
+   }
 
-    50% {
-        transform: scale(1.05);
-    }
+   50% {
+      transform: scale(1.05);
+   }
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+   from {
+      opacity: 0;
+      transform: translateY(20px);
+   }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+   to {
+      opacity: 1;
+      transform: translateY(0);
+   }
 }
 
 /* ========================================
    SMOOTH SCROLLING
    ======================================== */
 html {
-    scroll-behavior: smooth;
+   scroll-behavior: smooth;
 }
 
 /* ========================================
@@ -495,5 +499,5 @@ button,
 .dropdown-item,
 .badge,
 .tag {
-    cursor: pointer;
+   cursor: pointer;
 }

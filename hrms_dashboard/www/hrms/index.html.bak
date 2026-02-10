@@ -1,78 +1,15 @@
-import frappe
+<!DOCTYPE html>
+<html lang="en">
 
-def get_context(context):
-    context.no_cache = 1
-    context.show_sidebar = False
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Dashboard</title>
+    <link rel="stylesheet" href="/assets/hrms_dashboard/css/hrms_dashboard.css">
+</head>
 
-@frappe.whitelist()
-def get_dashboard_html():
-    """Return the HRMS dashboard HTML content"""
-    html = """
+<body>
     <div class="hrms-dashboard-container">
-
-        <!-- Greeting & Quote Widget -->
-        <div class="greeting-widget-container" style="background: white; border-radius: 8px; padding: 15px 25px; margin-bottom: 20px;">
-            <h2 id="greeting-text" class="greeting-text" style="margin-top: 0; margin-bottom: 5px; font-size: 24px;">Good Morning</h2>
-            <div class="quote-container" style="margin-top: 5px; border-left: 3px solid #3498db; padding-left: 10px;">
-                <p id="quote-text" class="quote-text" style="font-size: 14px; margin-bottom: 3px; color: #5a6c7d;">The only impossible journey is the one you never begin.</p>
-                <p id="quote-author" class="quote-author" style="font-size: 12px; color: #95a5a6; margin: 0;">- Tony Robbins</p>
-            </div>
-        </div>
-
-        <!-- Leave Balance Cards Section -->
-        <div class="leave-balance-section">
-            <div class="leave-card">
-                <div class="leave-card-header">
-                    <span class="leave-type">Comp - Off</span>
-                    <span class="leave-granted">Granted: <strong>1.5</strong></span>
-                </div>
-                <div class="leave-balance-display">
-                    <div class="balance-number">1.5</div>
-                    <div class="balance-label">Balance</div>
-                </div>
-                <a href="#" class="view-details-link">View Details</a>
-                <div class="leave-consumed">0 of 1.5 Consumed</div>
-            </div>
-
-            <div class="leave-card">
-                <div class="leave-card-header">
-                    <span class="leave-type">Casual Leave</span>
-                    <span class="leave-granted">Granted: <strong>2</strong></span>
-                </div>
-                <div class="leave-balance-display">
-                    <div class="balance-number">02</div>
-                    <div class="balance-label">Balance</div>
-                </div>
-                <a href="#" class="view-details-link">View Details</a>
-                <div class="leave-consumed">0 of 2 Consumed</div>
-            </div>
-
-            <div class="leave-card">
-                <div class="leave-card-header">
-                    <span class="leave-type">Privilege Leave</span>
-                    <span class="leave-granted">Granted: <strong>14.5</strong></span>
-                </div>
-                <div class="leave-balance-display">
-                    <div class="balance-number">14.5</div>
-                    <div class="balance-label">Balance</div>
-                </div>
-                <a href="#" class="view-details-link">View Details</a>
-                <div class="leave-consumed">0 of 14.5 Consumed</div>
-            </div>
-
-            <div class="leave-card">
-                <div class="leave-card-header">
-                    <span class="leave-type">Optional Holiday</span>
-                    <span class="leave-granted">Granted: <strong>2</strong></span>
-                </div>
-                <div class="leave-balance-display">
-                    <div class="balance-number">02</div>
-                    <div class="balance-label">Balance</div>
-                </div>
-                <a href="#" class="view-details-link">View Details</a>
-                <div class="leave-consumed">0 of 2 Consumed</div>
-            </div>
-        </div>
 
         <!-- Row 1: Top 3 widgets -->
         <div class="dashboard-row row-top">
@@ -268,6 +205,20 @@ def get_dashboard_html():
             </div>
         </div>
     </div>
-    """
-    return html
 
+    <script src="/assets/hrms_dashboard/js/hrms_dashboard.js"></script>
+    <script>
+        // Initialize dashboard after script loads
+        if (typeof initDashboard === 'function') {
+            initDashboard();
+        } else {
+            window.addEventListener('load', function() {
+                if (typeof initDashboard === 'function') {
+                    initDashboard();
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

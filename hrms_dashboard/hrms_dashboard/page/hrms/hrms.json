@@ -1,30 +1,33 @@
 {
-    "content": null,
-    "creation": "2026-02-05 21:59:00.000000",
-    "docstatus": 0,
-    "doctype": "Page",
-    "idx": 0,
-    "modified": "2026-02-05 21:59:00.000000",
-    "modified_by": "Administrator",
-    "module": "Hrms Dashboard",
-    "name": "hrms",
-    "owner": "Administrator",
-    "page_name": "hrms",
-    "roles": [
-        {
-            "role": "System Manager"
-        },
-        {
-            "role": "HR Manager"
-        },
-        {
-            "role": "HR User"
-        },
-        {
-            "role": "Employee"
-        }
-    ],
-    "standard": "Yes",
-    "system_page": 0,
-    "title": "HRMS Dashboard"
+ "content": null,
+ "creation": "2026-02-05 21:59:00",
+ "docstatus": 0,
+ "doctype": "Page",
+ "icon": "",
+ "idx": 0,
+ "modified": "2026-02-10 13:58:39.773929",
+ "modified_by": "Administrator",
+ "module": "Hrms Dashboard",
+ "name": "hrms",
+ "owner": "Administrator",
+ "page_name": "hrms",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "HR Manager"
+  },
+  {
+   "role": "HR User"
+  },
+  {
+   "role": "Employee"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 1,
+ "title": "HRMS Dashboard"
 }
