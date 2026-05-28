@@ -27,14 +27,14 @@ app_license = "mit"
 # include js, css files in header of desk.html
 app_include_css = [
     "/assets/hrms_dashboard/css/hrms_dashboard.css",
-    "/assets/hrms_dashboard/css/global_hover_effects.css"
+   # "/assets/hrms_dashboard/css/global_hover_effects.css"
 ]
 app_include_js = "/assets/hrms_dashboard/js/hrms_dashboard.js"
 
 # include js, css files in header of web template
 web_include_css = [
     "/assets/hrms_dashboard/css/hrms_dashboard.css",
-    "/assets/hrms_dashboard/css/global_hover_effects.css"
+   # "/assets/hrms_dashboard/css/global_hover_effects.css"
 ]
 web_include_js = "/assets/hrms_dashboard/js/hrms_dashboard.js"
 
