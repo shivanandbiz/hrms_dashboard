@@ -504,10 +504,17 @@ async function handleSignOut() {
 async function handleDownloadPayslip() {
     try {
         const selector = document.getElementById('payslip-selector');
-        let url = '/api/method/hrms_dashboard.api.payroll_api.download_payslip';
-        if (selector && selector.value) {
-            url += `?payslip_name=${encodeURIComponent(selector.value)}`;
+        
+        // Check if there are any payslips generated
+        if (!selector || !selector.value || selector.options.length === 0) {
+            frappe.show_alert({
+                message: 'Payslip not generated',
+                indicator: 'orange'
+            }, 5);
+            return;
         }
+
+        let url = `/api/method/hrms_dashboard.api.payroll_api.download_payslip?payslip_name=${encodeURIComponent(selector.value)}`;
         const response = await fetch(url);
         const data = await response.json();
 
@@ -738,6 +745,28 @@ function showReviewItemsDialog(items) {
     });
 }
 
+// Set default payslip month (previous month) and days based on current date
+function setDefaultPayslipMonth() {
+    const monthElement = document.querySelector('.month');
+    const paidDaysElement = document.querySelector('.paid-days');
+    
+    // Get previous month
+    const now = new Date();
+    const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    
+    // Get days in previous month
+    const daysInPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+    
+    if (monthElement) {
+        const options = { month: 'short', year: 'numeric' };
+        monthElement.textContent = prevMonthDate.toLocaleDateString('en-US', options);
+    }
+    
+    if (paidDaysElement) {
+        paidDaysElement.innerHTML = `${daysInPrevMonth}<br><small>Paid Days</small>`;
+    }
+}
+
 // Initialize dashboard
 function initDashboard() {
     console.log('Initializing HRMS Dashboard with ERPNext integration...');
@@ -745,6 +774,9 @@ function initDashboard() {
     // Start timer and update date
     startTimer();
     updateClockDate();
+    
+    // Set default payslip widget display before API loads
+    setDefaultPayslipMonth();
 
     // Check if frappe is available (running in ERPNext context)
     if (typeof frappe !== 'undefined') {

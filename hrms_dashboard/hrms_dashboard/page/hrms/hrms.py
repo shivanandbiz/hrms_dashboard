@@ -7,9 +7,19 @@ def get_context(context):
 @frappe.whitelist()
 def get_dashboard_html():
     """Return the HRMS dashboard HTML content"""
-    html = """
-    <div class="hrms-dashboard-container">
+    from datetime import datetime
+    import calendar
+    from dateutil.relativedelta import relativedelta
+    
+    # Calculate previous month
+    today = datetime.today()
+    prev_month_date = today - relativedelta(months=1)
+    prev_month_name = prev_month_date.strftime("%b %Y") # e.g. "May 2026"
+    _, days_in_prev_month = calendar.monthrange(prev_month_date.year, prev_month_date.month)
 
+    html = f"""
+    <div class="hrms-dashboard-container">
+    
         <!-- Greeting & Quote Widget -->
         <div class="greeting-widget-container" style="background: white; border-radius: 8px; padding: 15px 25px; margin-bottom: 20px;">
             <h2 id="greeting-text" class="greeting-text" style="margin-top: 0; margin-bottom: 5px; font-size: 24px;">Good Morning</h2>
@@ -142,8 +152,8 @@ def get_dashboard_html():
                                 stroke-dasharray="314" stroke-dashoffset="78" transform="rotate(-90 60 60)" />
                         </svg>
                         <div class="chart-label">
-                            <span class="month">Jan 2026</span>
-                            <span class="paid-days">31<br><small>Paid Days</small></span>
+                            <span class="month">{prev_month_name}</span>
+                            <span class="paid-days">{days_in_prev_month}<br><small>Paid Days</small></span>
                         </div>
                     </div>
                     <div class="payslip-breakdown">
