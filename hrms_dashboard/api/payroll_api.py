@@ -9,8 +9,8 @@ from datetime import datetime
 
 
 @frappe.whitelist()
-def get_latest_payslip():
-    """Get latest salary slip for current user"""
+def get_latest_payslip(payslip_name=None):
+    """Get latest salary slip or a specific one for current user"""
     try:
         user = frappe.session.user
         employee = frappe.get_value("Employee", {"user_id": user}, "name")
@@ -18,14 +18,23 @@ def get_latest_payslip():
         if not employee:
             return {"error": "Employee not found"}
         
-        # Get latest salary slip
-        latest_slip = frappe.get_all(
-            "Salary Slip",
-            filters={"employee": employee, "docstatus": 1},
-            fields=["name", "start_date", "end_date", "gross_pay", "total_deduction", "net_pay", "payment_days"],
-            order_by="start_date desc",
-            limit=1
-        )
+        if payslip_name:
+            # Get specific salary slip
+            latest_slip = frappe.get_all(
+                "Salary Slip",
+                filters={"name": payslip_name, "employee": employee, "docstatus": 1},
+                fields=["name", "start_date", "end_date", "gross_pay", "total_deduction", "net_pay", "payment_days"],
+                limit=1
+            )
+        else:
+            # Get latest salary slip
+            latest_slip = frappe.get_all(
+                "Salary Slip",
+                filters={"employee": employee, "docstatus": 1},
+                fields=["name", "start_date", "end_date", "gross_pay", "total_deduction", "net_pay", "payment_days"],
+                order_by="start_date desc",
+                limit=1
+            )
         
         if not latest_slip:
             return {"error": "No salary slip found"}

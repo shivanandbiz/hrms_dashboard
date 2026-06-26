@@ -321,9 +321,13 @@ function updateLeaveWidget(data) {
 }
 
 // Load payslip data from ERPNext
-async function loadPayslipData() {
+async function loadPayslipData(payslipName = null) {
     try {
-        const response = await fetch('/api/method/hrms_dashboard.api.payroll_api.get_latest_payslip');
+        let url = '/api/method/hrms_dashboard.api.payroll_api.get_latest_payslip';
+        if (payslipName) {
+            url += `?payslip_name=${encodeURIComponent(payslipName)}`;
+        }
+        const response = await fetch(url);
         const data = await response.json();
 
         if (data.message && !data.message.error) {
@@ -337,32 +341,90 @@ async function loadPayslipData() {
     }
 }
 
+// Load payslip history for dropdown
+async function loadPayslipHistory() {
+    try {
+        const response = await fetch('/api/method/hrms_dashboard.api.payroll_api.get_payslip_history');
+        const data = await response.json();
+        
+        if (data.message && data.message.length > 0) {
+            const selector = document.getElementById('payslip-selector');
+            if (selector) {
+                // Check if we already populated it
+                if (selector.options.length > 0) {
+                    loadPayslipData(selector.value);
+                    return;
+                }
+                
+                selector.innerHTML = '';
+                data.message.forEach(slip => {
+                    const date = new Date(slip.start_date);
+                    const monthStr = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    const option = document.createElement('option');
+                    option.value = slip.name;
+                    option.textContent = monthStr;
+                    selector.appendChild(option);
+                });
+                selector.style.display = 'inline-block';
+                
+                // Add event listener
+                selector.addEventListener('change', function() {
+                    // Hide salary when changing month, for security
+                    const showBtn = document.querySelector('.btn-show-salary');
+                    if (showBtn && showBtn.textContent.trim() === 'Hide Salary') {
+                        const values = document.querySelectorAll('.breakdown-row .value');
+                        values.forEach(value => { value.textContent = '*****'; });
+                        showBtn.textContent = 'Show Salary';
+                    }
+                    loadPayslipData(this.value);
+                });
+                
+                // Load data for the first (latest) slip initially
+                loadPayslipData(selector.value);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading payslip history:', error);
+    }
+}
+
 // Update payslip widget with real data
 function updatePayslipWidget(data) {
     if (!data || data.error) return;
+
+    const showBtn = document.querySelector('.btn-show-salary');
+    const isHidden = !showBtn || showBtn.textContent.trim() === 'Show Salary';
 
     // Update breakdown values
     const grossPay = document.querySelector('.breakdown-row:nth-child(1) .value');
     const deduction = document.querySelector('.breakdown-row:nth-child(2) .value');
     const netPay = document.querySelector('.breakdown-row:nth-child(3) .value');
 
-    if (grossPay && data.gross_pay) {
-        grossPay.textContent = `₹${Math.round(data.gross_pay).toLocaleString()}`;
+    if (grossPay && data.gross_pay !== undefined) {
         grossPay.dataset.value = data.gross_pay;
+        if (!isHidden) grossPay.textContent = `₹${Math.round(data.gross_pay).toLocaleString()}`;
     }
-    if (deduction && data.total_deduction) {
-        deduction.textContent = `₹${Math.round(data.total_deduction).toLocaleString()}`;
+    if (deduction && data.total_deduction !== undefined) {
         deduction.dataset.value = data.total_deduction;
+        if (!isHidden) deduction.textContent = `₹${Math.round(data.total_deduction).toLocaleString()}`;
     }
-    if (netPay && data.net_pay) {
-        netPay.textContent = `₹${Math.round(data.net_pay).toLocaleString()}`;
+    if (netPay && data.net_pay !== undefined) {
         netPay.dataset.value = data.net_pay;
+        if (!isHidden) netPay.textContent = `₹${Math.round(data.net_pay).toLocaleString()}`;
     }
 
     // Update paid days
     const paidDaysElement = document.querySelector('.paid-days');
-    if (paidDaysElement && data.payment_days) {
+    if (paidDaysElement && data.payment_days !== undefined) {
         paidDaysElement.innerHTML = `${data.payment_days}<br><small>Paid Days</small>`;
+    }
+
+    // Update month
+    const monthElement = document.querySelector('.month');
+    if (monthElement && data.start_date) {
+        const date = new Date(data.start_date);
+        const options = { month: 'short', year: 'numeric' };
+        monthElement.textContent = date.toLocaleDateString('en-US', options);
     }
 }
 
@@ -441,7 +503,12 @@ async function handleSignOut() {
 // Download payslip
 async function handleDownloadPayslip() {
     try {
-        const response = await fetch('/api/method/hrms_dashboard.api.payroll_api.download_payslip');
+        const selector = document.getElementById('payslip-selector');
+        let url = '/api/method/hrms_dashboard.api.payroll_api.download_payslip';
+        if (selector && selector.value) {
+            url += `?payslip_name=${encodeURIComponent(selector.value)}`;
+        }
+        const response = await fetch(url);
         const data = await response.json();
 
         if (data.message && data.message.pdf_data) {
@@ -506,7 +573,9 @@ function handleShowSalary() {
             showBtn.textContent = 'Hide Salary';
         } else {
             // Load data first, then reveal
-            loadPayslipData().then(() => {
+            const selector = document.getElementById('payslip-selector');
+            const payslipName = selector ? selector.value : null;
+            loadPayslipData(payslipName).then(() => {
                 showBtn.textContent = 'Hide Salary';
             });
         }
@@ -686,7 +755,7 @@ function initDashboard() {
         loadAttendanceData();
         loadLeaveData();
         loadUpcomingHolidays();  // Load upcoming holidays
-        // Don't auto-load payslip (keep hidden by default)
+        loadPayslipHistory(); // Automatically load payslip metadata and history
 
         // Set up event listeners
         setupEventListeners();
@@ -702,6 +771,7 @@ function initDashboard() {
             loadAttendanceData();
             loadLeaveData();
             loadUpcomingHolidays();
+            loadPayslipHistory();
         }, 5 * 60 * 1000);
 
         console.log('HRMS Dashboard initialized with ERPNext integration!');
