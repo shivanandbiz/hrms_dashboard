@@ -140,7 +140,7 @@ def get_dashboard_html():
             <div class="hrms-widget payslip-widget">
                 <div class="widget-header">
                     <h3 class="widget-title">Payslip</h3>
-                    <select id="payslip-selector" style="margin-left: auto; margin-right: 10px; font-size: 12px; padding: 2px 5px; border: 1px solid #e0e0e0; border-radius: 4px; display: none; background: white; color: #333; outline: none; cursor: pointer;">
+                    <select id="payslip-selector" style="margin-left: auto; margin-right: 10px; font-size: 12px; padding: 2px 5px; border: 1px solid #e0e0e0; border-radius: 4px; background: white; color: #333; outline: none; cursor: pointer;">
                     </select>
                     <span class="view-link" onclick="window.location.href='/app/salary-slip'" style="cursor: pointer;" title="View all Salary Slips">→</span>
                 </div>

@@ -347,42 +347,114 @@ async function loadPayslipHistory() {
         const response = await fetch('/api/method/hrms_dashboard.api.payroll_api.get_payslip_history');
         const data = await response.json();
         
+        const selector = document.getElementById('payslip-selector');
+        if (!selector) return;
+
+        // Check if we already populated it
+        if (selector.options.length > 0) {
+            return;
+        }
+
+        selector.innerHTML = '';
+        
+        // Map available payslips by month-year
+        const payslipMap = {};
         if (data.message && data.message.length > 0) {
-            const selector = document.getElementById('payslip-selector');
-            if (selector) {
-                // Check if we already populated it
-                if (selector.options.length > 0) {
-                    loadPayslipData(selector.value);
-                    return;
+            data.message.forEach(slip => {
+                const date = new Date(slip.end_date || slip.start_date);
+                const key = `${date.getMonth()}-${date.getFullYear()}`;
+                payslipMap[key] = slip;
+            });
+        }
+
+        // Generate last 4 months
+        const now = new Date();
+        for (let i = 1; i <= 4; i++) {
+            const pastMonthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthStr = pastMonthDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            const key = `${pastMonthDate.getMonth()}-${pastMonthDate.getFullYear()}`;
+            
+            const option = document.createElement('option');
+            option.textContent = monthStr;
+            
+            if (payslipMap[key]) {
+                option.value = payslipMap[key].name;
+            } else {
+                option.value = `NO_SLIP_${key}`;
+            }
+            
+            selector.appendChild(option);
+        }
+
+        // If there are more historical payslips beyond the last 4 months, add them too
+        if (data.message && data.message.length > 0) {
+            data.message.forEach(slip => {
+                const date = new Date(slip.end_date || slip.start_date);
+                const key = `${date.getMonth()}-${date.getFullYear()}`;
+                
+                // Only add if not already in the last 4 months
+                let isRecent4Months = false;
+                for (let i = 1; i <= 4; i++) {
+                    const past = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    if (`${past.getMonth()}-${past.getFullYear()}` === key) {
+                        isRecent4Months = true;
+                        break;
+                    }
                 }
                 
-                selector.innerHTML = '';
-                data.message.forEach(slip => {
-                    const date = new Date(slip.start_date);
+                if (!isRecent4Months) {
                     const monthStr = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
                     const option = document.createElement('option');
                     option.value = slip.name;
                     option.textContent = monthStr;
                     selector.appendChild(option);
-                });
-                selector.style.display = 'inline-block';
+                }
+            });
+        }
+
+        // Add event listener
+        selector.addEventListener('change', function() {
+            // Hide salary when changing month, for security
+            const showBtn = document.querySelector('.btn-show-salary');
+            if (showBtn && showBtn.textContent.trim() === 'Hide Salary') {
+                const values = document.querySelectorAll('.breakdown-row .value');
+                values.forEach(value => { value.textContent = '*****'; });
+                showBtn.textContent = 'Show Salary';
+            }
+            
+            if (this.value.startsWith('NO_SLIP_')) {
+                // Reset display
+                const grossPay = document.querySelector('.breakdown-row:nth-child(1) .value');
+                const deduction = document.querySelector('.breakdown-row:nth-child(2) .value');
+                const netPay = document.querySelector('.breakdown-row:nth-child(3) .value');
+                const paidDaysElement = document.querySelector('.paid-days');
+                const monthElement = document.querySelector('.month');
                 
-                // Add event listener
-                selector.addEventListener('change', function() {
-                    // Hide salary when changing month, for security
-                    const showBtn = document.querySelector('.btn-show-salary');
-                    if (showBtn && showBtn.textContent.trim() === 'Hide Salary') {
-                        const values = document.querySelectorAll('.breakdown-row .value');
-                        values.forEach(value => { value.textContent = '*****'; });
-                        showBtn.textContent = 'Show Salary';
-                    }
-                    loadPayslipData(this.value);
-                });
+                if (grossPay) { grossPay.textContent = '*****'; grossPay.dataset.value = '0'; }
+                if (deduction) { deduction.textContent = '*****'; deduction.dataset.value = '0'; }
+                if (netPay) { netPay.textContent = '*****'; netPay.dataset.value = '0'; }
+                if (paidDaysElement) { paidDaysElement.innerHTML = `0<br><small>Paid Days</small>`; }
+                if (monthElement) {
+                    monthElement.textContent = this.options[this.selectedIndex].textContent;
+                }
                 
-                // Load data for the first (latest) slip initially
+                // Show alert
+                frappe.show_alert({message: 'Payslip not generated for this month', indicator: 'orange'}, 3);
+            } else {
+                loadPayslipData(this.value);
+            }
+        });
+
+        // Load data for the first (latest) slip initially
+        if (selector.options.length > 0) {
+            if (!selector.value.startsWith('NO_SLIP_')) {
                 loadPayslipData(selector.value);
+            } else {
+                // Just trigger change to set zeros for NO_SLIP
+                selector.dispatchEvent(new Event('change'));
             }
         }
+
     } catch (error) {
         console.error('Error loading payslip history:', error);
     }
@@ -421,8 +493,8 @@ function updatePayslipWidget(data) {
 
     // Update month
     const monthElement = document.querySelector('.month');
-    if (monthElement && data.start_date) {
-        const date = new Date(data.start_date);
+    if (monthElement && (data.end_date || data.start_date)) {
+        const date = new Date(data.end_date || data.start_date);
         const options = { month: 'short', year: 'numeric' };
         monthElement.textContent = date.toLocaleDateString('en-US', options);
     }
@@ -506,9 +578,9 @@ async function handleDownloadPayslip() {
         const selector = document.getElementById('payslip-selector');
         
         // Check if there are any payslips generated
-        if (!selector || !selector.value || selector.options.length === 0) {
+        if (!selector || !selector.value || selector.value.startsWith('NO_SLIP_') || selector.options.length === 0) {
             frappe.show_alert({
-                message: 'Payslip not generated',
+                message: 'Payslip not generated for this month',
                 indicator: 'orange'
             }, 5);
             return;
