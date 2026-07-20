@@ -675,9 +675,19 @@ function setupEventListeners() {
         signOutBtn.addEventListener('click', function () {
             const action = this.dataset.action;
             if (action === 'signin') {
-                handleSignIn();
+                frappe.confirm(
+                    'Are you sure you want to sign-in?',
+                    function() {
+                        handleSignIn();
+                    }
+                );
             } else if (action === 'signout') {
-                handleSignOut();
+                frappe.confirm(
+                    'Are you sure you want to sign-out?',
+                    function() {
+                        handleSignOut();
+                    }
+                );
             }
         });
     }
