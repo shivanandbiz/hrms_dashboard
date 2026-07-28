@@ -29,6 +29,27 @@ def custom_get_holidays(employee, from_date, to_date, holiday_list=None):
 
 leave_application.get_holidays = custom_get_holidays
 
+# 1.1 Monkey patch get_holiday_dates_for_employee so attendance is marked for optional leaves
+from frappe.utils import cstr
+original_get_holiday_dates_for_employee = leave_application.get_holiday_dates_for_employee
+
+def custom_get_holiday_dates_for_employee(employee, start_date, end_date):
+	dates = original_get_holiday_dates_for_employee(employee, start_date, end_date)
+	if dates and frappe.db.has_column("Holiday", "is_optional"):
+		holiday_list = get_holiday_list_for_employee(employee)
+		if holiday_list:
+			optional_holidays = frappe.db.get_all(
+				"Holiday",
+				filters={"parent": holiday_list, "holiday_date": ("in", dates), "is_optional": 1},
+				pluck="holiday_date"
+			)
+			if optional_holidays:
+				optional_holidays_str = [cstr(d) for d in optional_holidays]
+				dates = [d for d in dates if cstr(d) not in optional_holidays_str]
+	return dates
+
+leave_application.get_holiday_dates_for_employee = custom_get_holiday_dates_for_employee
+
 # 2. Override LeaveApplication Class to adjust validate_optional_leave
 class CustomLeaveApplication(LeaveApplication):
 	def validate_optional_leave(self):
