@@ -135,9 +135,9 @@ web_include_js = "/assets/hrms_dashboard/js/hrms_dashboard.js"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"Leave Application": "hrms_dashboard.overrides.leave_application.CustomLeaveApplication"
+}
 
 # Document Events
 # ---------------
