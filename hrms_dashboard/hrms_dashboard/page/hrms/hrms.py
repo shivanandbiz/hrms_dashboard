@@ -128,15 +128,17 @@ def get_dashboard_html():
                 timeago = f"In {abs(day_diff)} days"
 
             activities_cards_html += f"""
-            <div class="activity-card" data-activity-id="{activity_id}" style="border: 1px solid #e0e0e0; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); min-height: 260px; display: flex; flex-direction: column; position: relative;">
-                <div style="padding: 24px 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <img src="/assets/hrms_dashboard/biztechnosys_logo.png" alt="Biztechnosys" style="height: 30px; object-fit: contain;">
+            <div class="activity-card" data-activity-id="{activity_id}" style="border: 1px solid #e0e0e0; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); min-height: 260px; display: flex; flex-direction: column; position: relative; flex-shrink: 0;">
+                <div style="padding: 24px 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <img src="/assets/hrms_dashboard/biztechnosys_logo.png" alt="Biztechnosys" style="height: 30px; object-fit: contain;">
+                            </div>
+                            <div style="font-size: 12px; color: #7f8c8d;">Group: Events</div>
                         </div>
                         <span style="font-size: 11px; color: #95a5a6;">{timeago}</span>
                     </div>
-                    <div style="font-size: 12px; color: #7f8c8d; margin-bottom: 16px;">Group: Events</div>
                     <div style="display: flex; gap: 16px; align-items: center;">
                         <div style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
                             {icon_svg}
@@ -151,8 +153,35 @@ def get_dashboard_html():
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Footer Actions -->
+                    <div class="activity-actions" style="border-top: 1px solid #eee; padding-top: 12px; display: flex; gap: 16px; margin-top: 16px; position: relative;">
+                        <button class="btn-reaction" style="background: none; border: none; color: #7f8c8d; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 0;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                            Reaction
+                        </button>
+                        <button class="btn-comment" style="background: none; border: none; color: #7f8c8d; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 0;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                            Comment
+                        </button>
+                        
+                        <div class="reactions-picker" style="display: none; position: absolute; bottom: 100%; left: 0; background: white; border: 1px solid #ddd; border-radius: 20px; padding: 4px 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; gap: 8px;">
+                            <span class="emoji-option" style="cursor: pointer; font-size: 20px;">👍</span>
+                            <span class="emoji-option" style="cursor: pointer; font-size: 20px;">❤️</span>
+                            <span class="emoji-option" style="cursor: pointer; font-size: 20px;">😂</span>
+                            <span class="emoji-option" style="cursor: pointer; font-size: 20px;">🎉</span>
+                            <span class="emoji-option" style="cursor: pointer; font-size: 20px;">👏</span>
+                        </div>
+                    </div>
+                    
+                    <div class="comments-section" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee;">
+                        <div class="comments-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 12px;"></div>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" class="comment-input" placeholder="Write a comment..." style="flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 16px; outline: none; font-size: 13px;">
+                            <button class="btn-submit-comment" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 16px; cursor: pointer; font-size: 13px;">Post</button>
+                        </div>
+                    </div>
                 </div>
-
             </div>
             """
 

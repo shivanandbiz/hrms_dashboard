@@ -711,7 +711,29 @@ function setupActivityFeed() {
                 activityCards.forEach(card => {
                     const aid = card.dataset.activityId;
                     if (!aid || !data[aid]) return;
-
+                    
+                    const reactions = data[aid].reactions || {};
+                    const comments = data[aid].comments || [];
+                    
+                    // Render reactions
+                    if (Object.keys(reactions).length > 0) {
+                        const rc = _getOrCreateReactionContainer(card);
+                        for (const [emoji, count] of Object.entries(reactions)) {
+                            rc.appendChild(_makeReactionPill(emoji, count, aid, rc));
+                        }
+                    }
+                    
+                    // Render comments
+                    if (comments.length > 0) {
+                        const commentsList = card.querySelector('.comments-list');
+                        if (commentsList) {
+                            comments.forEach(html => {
+                                const tmp = document.createElement('div');
+                                tmp.innerHTML = html.trim();
+                                if (tmp.firstChild) commentsList.appendChild(tmp.firstChild);
+                            });
+                        }
+                    }
                 });
             }
         });
