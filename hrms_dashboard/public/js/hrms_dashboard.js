@@ -694,7 +694,179 @@ function setupEventListeners() {
     }
 }
 
-// Load Pending Reviews for Reporting Manager
+// Set up event listeners for activities feed
+function setupActivityFeed() {
+    const activityCards = document.querySelectorAll('.activity-card');
+    if (!activityCards.length) return;
+
+    // Load existing reactions & comments from DB
+    const activityIds = Array.from(activityCards).map(c => c.dataset.activityId).filter(Boolean);
+    if (activityIds.length > 0) {
+        frappe.call({
+            method: 'hrms_dashboard.api.activity_api.get_activity_data',
+            args: { activity_ids: activityIds },
+            callback: function(r) {
+                if (!r.message) return;
+                const data = r.message;
+                activityCards.forEach(card => {
+                    const aid = card.dataset.activityId;
+                    if (!aid || !data[aid]) return;
+
+                });
+            }
+        });
+    }
+
+    activityCards.forEach(card => {
+        // Skip if already initialized to prevent duplicate listeners
+        if (card._activityFeedInitialized) return;
+        card._activityFeedInitialized = true;
+
+        const aid             = card.dataset.activityId;
+        const btnComment      = card.querySelector('.btn-comment');
+        const commentsSection = card.querySelector('.comments-section');
+        const commentInput    = card.querySelector('.comment-input');
+        const commentsList    = card.querySelector('.comments-list');
+        const btnSubmit       = card.querySelector('.btn-submit-comment');
+        const btnReaction     = card.querySelector('.btn-reaction');
+        const reactionsPicker = card.querySelector('.reactions-picker');
+
+        console.log('[HRMS Activity] Card aid=' + aid,
+            { btnComment: !!btnComment, commentsSection: !!commentsSection,
+              commentInput: !!commentInput, btnSubmit: !!btnSubmit,
+              btnReaction: !!btnReaction, reactionsPicker: !!reactionsPicker });
+
+        if (btnComment && commentsSection) {
+            btnComment.addEventListener('click', () => {
+                const hidden = commentsSection.style.display !== 'block';
+                commentsSection.style.display = hidden ? 'block' : 'none';
+                if (hidden && commentInput) setTimeout(() => commentInput.focus(), 50);
+            });
+        }
+
+        if (btnSubmit && commentInput && commentsList && aid) {
+            const doSubmit = () => {
+                const text = commentInput.value.trim();
+                if (!text) return;
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = '...';
+                frappe.call({
+                    method: 'hrms_dashboard.api.activity_api.add_comment',
+                    args: { activity_id: aid, comment_text: text },
+                    callback: function(r) {
+                        btnSubmit.disabled = false;
+                        btnSubmit.textContent = 'Post';
+                        if (r.message) {
+                            const tmp = document.createElement('div');
+                            tmp.innerHTML = r.message.trim();
+                            if (tmp.firstChild) commentsList.appendChild(tmp.firstChild);
+                            commentInput.value = '';
+                            if (commentsSection) commentsSection.style.display = 'block';
+                        }
+                    }
+                });
+            };
+            btnSubmit.addEventListener('click', doSubmit);
+            commentInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); doSubmit(); }
+            });
+        }
+
+        if (btnReaction && reactionsPicker) {
+            btnReaction.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.reactions-picker').forEach(p => {
+                    if (p !== reactionsPicker) p.style.display = 'none';
+                });
+                const isHidden = reactionsPicker.style.display !== 'flex';
+                reactionsPicker.style.display = isHidden ? 'flex' : 'none';
+            });
+            reactionsPicker.addEventListener('click', e => e.stopPropagation());
+        }
+
+        if (reactionsPicker && aid) {
+            reactionsPicker.querySelectorAll('.emoji-option').forEach(emojiEl => {
+                emojiEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const emojiChar = emojiEl.textContent.trim();
+                    reactionsPicker.style.display = 'none';
+                    frappe.call({
+                        method: 'hrms_dashboard.api.activity_api.add_reaction',
+                        args: { activity_id: aid, emoji: emojiChar },
+                        callback: function(r) {
+                            if (!r.message) return;
+                            const rc = _getOrCreateReactionContainer(card);
+                            const existingPill = Array.from(rc.children).find(s => s.dataset.emoji === emojiChar);
+                            if (r.message.action === 'added') {
+                                if (existingPill) {
+                                    existingPill.querySelector('span').textContent = parseInt(existingPill.querySelector('span').textContent) + 1;
+                                } else {
+                                    rc.appendChild(_makeReactionPill(emojiChar, 1, aid, rc));
+                                }
+                            } else if (r.message.action === 'removed') {
+                                if (existingPill) {
+                                    const cnt = parseInt(existingPill.querySelector('span').textContent) - 1;
+                                    if (cnt <= 0) {
+                                        existingPill.remove();
+                                        if (rc.children.length === 0) rc.remove();
+                                    } else { existingPill.querySelector('span').textContent = cnt; }
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+        }
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.reactions-picker').forEach(p => p.style.display = 'none');
+    });
+}
+
+function _getOrCreateReactionContainer(card) {
+    let rc = card.querySelector('.reactions-container');
+    if (!rc) {
+        rc = document.createElement('div');
+        rc.className = 'reactions-container';
+        rc.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding:4px 16px 16px;';
+        const actionsDiv = card.querySelector('.activity-actions');
+        if (actionsDiv) actionsDiv.parentNode.insertBefore(rc, actionsDiv);
+        else card.appendChild(rc);
+    }
+    return rc;
+}
+
+function _makeReactionPill(emoji, count, activityId, container) {
+    const pill = document.createElement('span');
+    pill.dataset.emoji = emoji;
+    pill.style.cssText = 'display:inline-flex;align-items:center;gap:3px;background:#f0f2f5;border:1px solid #e4e6eb;padding:2px 8px;border-radius:12px;font-size:13px;cursor:pointer;user-select:none;transition:background 0.15s;';
+    pill.innerHTML = emoji + ' <span style="font-weight:600;font-size:12px;">' + count + '</span>';
+    pill.title = 'Double click to toggle reaction';
+    pill.addEventListener('mouseenter', () => pill.style.background = '#dde1e7');
+    pill.addEventListener('mouseleave', () => pill.style.background = '#f0f2f5');
+    pill.addEventListener('dblclick', () => {
+        frappe.call({
+            method: 'hrms_dashboard.api.activity_api.add_reaction',
+            args: { activity_id: activityId, emoji: emoji },
+            callback: function(res) {
+                if (!res.message) return;
+                if (res.message.action === 'removed') {
+                    const cnt = parseInt(pill.querySelector('span').textContent) - 1;
+                    if (cnt <= 0) {
+                        pill.remove();
+                        if (container && container.children.length === 0) container.remove();
+                    } else { pill.querySelector('span').textContent = cnt; }
+                } else if (res.message.action === 'added') {
+                    pill.querySelector('span').textContent = parseInt(pill.querySelector('span').textContent) + 1;
+                }
+            }
+        });
+    });
+    return pill;
+}
+
+
 function loadPendingReviews() {
     frappe.call({
         method: 'hrms_dashboard.api.review_api.get_pending_reviews',
@@ -849,6 +1021,7 @@ function initDashboard() {
 
         // Set up event listeners
         setupEventListeners();
+        setupActivityFeed(); // Set up activity feed interactions
 
         // Initialize Greeting and Quote
         updateGreetingAndQuote();

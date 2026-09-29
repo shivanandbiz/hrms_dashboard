@@ -26,9 +26,9 @@ frappe.pages['hrms'].on_page_load = function (wrapper) {
                         .appendTo('head');
                 }
 
-                // Load JS and initialize dashboard after HTML is ready
-                $.getScript('/assets/hrms_dashboard/js/hrms_dashboard.js', function () {
-                    // Call initDashboard after script loads
+                // Load JS with cache-busting timestamp so latest version always loads
+                var jsUrl = '/assets/hrms_dashboard/js/hrms_dashboard.js?v=' + Date.now();
+                $.getScript(jsUrl, function () {
                     if (typeof initDashboard === 'function') {
                         initDashboard();
                     }
@@ -37,3 +37,14 @@ frappe.pages['hrms'].on_page_load = function (wrapper) {
         }
     });
 }
+
+frappe.pages['hrms'].on_page_show = function (wrapper) {
+    // Re-run setupActivityFeed if already initialized (e.g. navigating back)
+    if (typeof setupActivityFeed === 'function') {
+        var cards = document.querySelectorAll('.activity-card');
+        if (cards.length && !cards[0]._activityFeedInitialized) {
+            setupActivityFeed();
+        }
+    }
+}
+

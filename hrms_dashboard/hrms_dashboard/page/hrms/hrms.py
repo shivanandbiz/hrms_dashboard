@@ -17,6 +17,145 @@ def get_dashboard_html():
     prev_month_name = prev_month_date.strftime("%b %Y") # e.g. "May 2026"
     _, days_in_prev_month = calendar.monthrange(prev_month_date.year, prev_month_date.month)
 
+    from frappe.utils import getdate
+    today_date = getdate()
+    
+    # Birthdays this month
+    birthdays = frappe.db.sql("""
+        SELECT name, employee_name, image, date_of_birth as date
+        FROM `tabEmployee`
+        WHERE status = 'Active' AND date_of_birth IS NOT NULL
+        AND MONTH(date_of_birth) = %s
+    """, (today_date.month,), as_dict=True)
+    
+    # Anniversaries this month
+    anniversaries = frappe.db.sql("""
+        SELECT name, employee_name, image, date_of_joining as date
+        FROM `tabEmployee`
+        WHERE status = 'Active' AND date_of_joining IS NOT NULL
+        AND MONTH(date_of_joining) = %s AND YEAR(date_of_joining) < %s
+    """, (today_date.month, today_date.year), as_dict=True)
+    
+    activities = []
+    for b in birthdays:
+        b['type'] = 'Birthday'
+        b['day'] = b['date'].day
+        activities.append(b)
+        
+    for a in anniversaries:
+        a['type'] = 'Anniversary'
+        a['day'] = a['date'].day
+        a['years'] = today_date.year - a['date'].year
+        if a['years'] > 0:
+            activities.append(a)
+            
+    # Sort by day descending (most recent first in this month)
+    activities = sorted(activities, key=lambda x: x['day'], reverse=True)[:6]
+    
+    birthday_svg = """<svg width="100" height="100" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; max-height: 100%;">
+        <path d="M50 110 L150 70 L170 80 L70 120 Z" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M50 110 L50 113 L70 123 L70 120 Z" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M150 70 L150 73 L170 83 L170 80 Z" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M70 123 L170 83" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M75 95 L95 87 L110 93 L90 101 Z" fill="#fff" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M75 95 L75 105 L90 111 L90 101 Z" fill="#fff" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M90 111 L110 103 L110 93 L90 101 Z" fill="#fff" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M85 91 L100 97 M90 101 L90 111" stroke="#3498db" stroke-width="2.5"/>
+        <path d="M120 78 L135 72 L145 76 L130 82 Z" fill="#fff" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M120 78 L122 88 L132 92 L130 82 Z" fill="#fff" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M132 92 L142 86 L145 76 L130 82 Z" fill="#fff" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M120 78 Q125 65 132 65 Q135 65 145 76" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <circle cx="130" cy="62" r="3" fill="#e74c3c" stroke="#2c3e50" stroke-width="1"/>
+        <path d="M60 40 L65 35 M40 60 L45 55 M150 40 L155 35 M160 100 L165 95" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="40" cy="70" rx="6" ry="8" fill="none" stroke="#2c3e50" stroke-width="2" transform="rotate(-15 40 70)"/>
+        <path d="M38 78 L42 82 M40 80 Q45 90 35 100" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <ellipse cx="25" cy="65" rx="5" ry="7" fill="none" stroke="#2c3e50" stroke-width="2" transform="rotate(10 25 65)"/>
+        <path d="M25 72 Q20 80 28 90" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <path d="M70 30 L80 35 L75 25 Z" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <path d="M85 28 L95 33 L90 23 Z" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <path d="M100 26 L110 31 L105 21 Z" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <path d="M65 28 Q90 15 115 28" fill="none" stroke="#2c3e50" stroke-width="1.5"/>
+    </svg>"""
+
+    anniversary_svg = """<svg width="100" height="100" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; max-height: 100%;">
+        <path d="M40 30 L40 20 M35 25 L45 25 M36 21 L44 29 M36 29 L44 21" stroke="#f1c40f" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M160 40 L160 30 M155 35 L165 35 M156 31 L164 39 M156 39 L164 31" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M140 20 L142 25 L147 25 L143 28 L145 33 L140 30 L135 33 L137 28 L133 25 L138 25 Z" fill="none" stroke="#2c3e50" stroke-width="1.5"/>
+        <circle cx="100" cy="70" r="8" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <path d="M92 70 Q100 55 108 70 Q112 85 110 90 Q100 80 90 90 Q88 85 92 70" fill="none" stroke="#2c3e50" stroke-width="1.5"/>
+        <path d="M90 90 Q100 85 110 90 L105 110 L95 110 Z" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <path d="M95 110 L92 130 M105 110 L108 130" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+        <path d="M92 88 Q85 80 80 60" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+        <path d="M108 88 Q115 80 120 60" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+        <path d="M60 110 L50 120 L55 125 L65 115 Z" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <path d="M60 110 L65 100 L75 105 L65 115 Z" fill="none" stroke="#2c3e50" stroke-width="2"/>
+        <path d="M70 102 L75 90 M72 105 L85 95 M75 108 L85 105" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
+    </svg>"""
+
+    activities_cards_html = ""
+    if not activities:
+        activities_cards_html = """
+        <div style="padding: 30px; text-align: center; color: #7f8c8d; font-size: 13px;">
+            No birthdays or work anniversaries this month.
+        </div>
+        """
+    else:
+        for act in activities:
+            emp_name = act.get('employee_name')
+            img = act.get('image') or '/assets/frappe/images/default-avatar.png'
+            
+            if act['type'] == 'Birthday':
+                title = f"Happy Birthday, {emp_name}!"
+                msg = f"Happy Birthday {emp_name} , Have a great year ahead!"
+                icon_svg = birthday_svg
+            else:
+                title = f"Congratulations, {emp_name}!"
+                msg = f"Our congratulations to {emp_name} on completing {act['years']} successful year(s)."
+                icon_svg = anniversary_svg
+                
+            activity_id = f"{act['type'].lower()}_{emp_name.replace(' ', '_')}_{today_date.year}"
+                
+            day_diff = today_date.day - act['day']
+            if day_diff == 0:
+                timeago = "Today"
+            elif day_diff == 1:
+                timeago = "1 day ago"
+            elif day_diff == -1:
+                timeago = "In 1 day"
+            elif day_diff > 1:
+                timeago = f"{day_diff} days ago"
+            else:
+                timeago = f"In {abs(day_diff)} days"
+
+            activities_cards_html += f"""
+            <div class="activity-card" data-activity-id="{activity_id}" style="border: 1px solid #e0e0e0; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); min-height: 260px; display: flex; flex-direction: column; position: relative;">
+                <div style="padding: 24px 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <img src="/assets/hrms_dashboard/biztechnosys_logo.png" alt="Biztechnosys" style="height: 30px; object-fit: contain;">
+                        </div>
+                        <span style="font-size: 11px; color: #95a5a6;">{timeago}</span>
+                    </div>
+                    <div style="font-size: 12px; color: #7f8c8d; margin-bottom: 16px;">Group: Events</div>
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <div style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                            {icon_svg}
+                        </div>
+                        <div style="flex: 1;">
+                            <p style="font-size: 13px; color: #2c3e50; margin: 0 0 12px 0; line-height: 1.4;">{msg}</p>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e0e0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                    <img src="{img}" onerror="this.src='/assets/frappe/images/default-avatar.png'" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <strong style="font-size: 13px; color: #2c3e50;">{title}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            """
+
     html = f"""
     <div class="hrms-dashboard-container">
     
@@ -177,8 +316,27 @@ def get_dashboard_html():
                 </div>
             </div>
 
-            <!-- Middle Column: Quick Access, Upcoming Holidays, Track -->
+            <!-- Middle Column: Activities, Quick Access, Upcoming Holidays, Track -->
             <div class="middle-column">
+                <!-- Activities Feed -->
+                <div class="hrms-widget activities-widget" style="padding: 0; display: flex; flex-direction: column;">
+                    <div class="widget-header" style="padding: 16px 16px 10px 16px; border-bottom: 1px solid #f0f0f0; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 3px; height: 16px; background: #3498db; margin-right: 8px;"></div>
+                            <h3 class="widget-title" style="font-size: 14px; font-weight: 500; color: #5a6c7d;">All Activities - All Groups</h3>
+                        </div>
+                        <div style="font-size: 12px; color: #5a6c7d; cursor: pointer; display: flex; align-items: center;">
+                            Sort: <strong style="margin-left: 4px; margin-right: 4px; color: #2c3e50;">Newest first</strong> 
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="widget-content feed-scroll-container" style="flex: 1; max-height: 450px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; align-items: stretch; background: #fafafa;">
+                        {activities_cards_html}
+                                            </div>
+                </div>
+
                 <!-- Quick Access -->
                 <div class="hrms-widget quick-access-widget">
                     <h3 class="widget-title">Quick Access</h3>
