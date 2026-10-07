@@ -36,6 +36,14 @@ def get_dashboard_html():
         AND MONTH(date_of_joining) = %s AND YEAR(date_of_joining) < %s
     """, (today_date.month, today_date.year), as_dict=True)
     
+    # New Joiners this month
+    new_joiners = frappe.db.sql("""
+        SELECT name, employee_name, image, date_of_joining as date
+        FROM `tabEmployee`
+        WHERE status = 'Active' AND date_of_joining IS NOT NULL
+        AND MONTH(date_of_joining) = %s AND YEAR(date_of_joining) = %s
+    """, (today_date.month, today_date.year), as_dict=True)
+    
     activities = []
     for b in birthdays:
         b['type'] = 'Birthday'
@@ -49,8 +57,22 @@ def get_dashboard_html():
         if a['years'] > 0:
             activities.append(a)
             
-    # Sort by day descending (most recent first in this month)
-    activities = sorted(activities, key=lambda x: x['day'], reverse=True)[:6]
+    for n in new_joiners:
+        n['type'] = 'New Joiner'
+        n['day'] = n['date'].day
+        activities.append(n)
+            
+    def get_sort_key(act):
+        day_diff = act['day'] - today_date.day
+        if day_diff == 0:
+            return (0, 0)
+        elif day_diff > 0:
+            return (1, day_diff)
+        else:
+            return (2, abs(day_diff))
+            
+    # Sort with today/upcoming at the top, past events pushed to the bottom
+    activities = sorted(activities, key=get_sort_key)
     
     birthday_svg = """<svg width="100" height="100" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; max-height: 100%;">
         <path d="M50 110 L150 70 L170 80 L70 120 Z" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linejoin="round"/>
@@ -92,11 +114,16 @@ def get_dashboard_html():
         <path d="M70 102 L75 90 M72 105 L85 95 M75 108 L85 105" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/>
     </svg>"""
 
+    new_joiner_svg = """<svg width="100" height="100" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; max-height: 100%;">
+        <circle cx="100" cy="75" r="45" fill="#e3f2fd" />
+        <path d="M100 45 L112 65 L135 68 L118 85 L122 107 L100 95 L78 107 L82 85 L65 68 L88 65 Z" fill="#3498db" />
+    </svg>"""
+
     activities_cards_html = ""
     if not activities:
         activities_cards_html = """
         <div style="padding: 30px; text-align: center; color: #7f8c8d; font-size: 13px;">
-            No birthdays or work anniversaries this month.
+            No birthdays, work anniversaries, or new joiners this month.
         </div>
         """
     else:
@@ -108,10 +135,14 @@ def get_dashboard_html():
                 title = f"Happy Birthday, {emp_name}!"
                 msg = f"Happy Birthday {emp_name} , Have a great year ahead!"
                 icon_svg = birthday_svg
-            else:
+            elif act['type'] == 'Anniversary':
                 title = f"Congratulations, {emp_name}!"
                 msg = f"Our congratulations to {emp_name} on completing {act['years']} successful year(s)."
                 icon_svg = anniversary_svg
+            else:
+                title = f"Welcome, {emp_name}!"
+                msg = f"Let's welcome {emp_name} to the team!"
+                icon_svg = new_joiner_svg
                 
             activity_id = f"{act['type'].lower()}_{emp_name.replace(' ', '_')}_{today_date.year}"
                 
@@ -355,7 +386,7 @@ def get_dashboard_html():
                             <h3 class="widget-title" style="font-size: 14px; font-weight: 500; color: #5a6c7d;">All Activities - All Groups</h3>
                         </div>
                         <div style="font-size: 12px; color: #5a6c7d; cursor: pointer; display: flex; align-items: center;">
-                            Sort: <strong style="margin-left: 4px; margin-right: 4px; color: #2c3e50;">Newest first</strong> 
+                            Sort: <strong style="margin-left: 4px; margin-right: 4px; color: #2c3e50;">Upcoming first</strong> 
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>

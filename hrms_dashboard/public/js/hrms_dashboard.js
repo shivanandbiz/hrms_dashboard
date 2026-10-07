@@ -477,14 +477,18 @@ function updatePayslipWidget(data) {
 }
 
 // Handle sign in (clock in)
-async function handleSignIn() {
+async function handleSignIn(location = '', remarks = '') {
     try {
         const response = await fetch('/api/method/hrms_dashboard.api.attendance_api.clock_in', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Frappe-CSRF-Token': frappe.csrf_token
-            }
+            },
+            body: JSON.stringify({
+                location: location,
+                remarks: remarks
+            })
         });
         const data = await response.json();
 
@@ -502,6 +506,11 @@ async function handleSignIn() {
                 message: data.message.error,
                 indicator: 'red'
             }, 5);
+        } else {
+            frappe.show_alert({
+                message: data._server_messages ? JSON.parse(JSON.parse(data._server_messages)[0]).message : 'An error occurred during sign in.',
+                indicator: 'red'
+            }, 5);
         }
     } catch (error) {
         console.error('Error signing in:', error);
@@ -513,14 +522,18 @@ async function handleSignIn() {
 }
 
 // Handle sign out (clock out)
-async function handleSignOut() {
+async function handleSignOut(location = '', remarks = '') {
     try {
         const response = await fetch('/api/method/hrms_dashboard.api.attendance_api.clock_out', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Frappe-CSRF-Token': frappe.csrf_token
-            }
+            },
+            body: JSON.stringify({
+                location: location,
+                remarks: remarks
+            })
         });
         const data = await response.json();
 
@@ -536,6 +549,11 @@ async function handleSignOut() {
         } else if (data.message && data.message.error) {
             frappe.show_alert({
                 message: data.message.error,
+                indicator: 'red'
+            }, 5);
+        } else {
+            frappe.show_alert({
+                message: data._server_messages ? JSON.parse(JSON.parse(data._server_messages)[0]).message : 'An error occurred during sign out.',
                 indicator: 'red'
             }, 5);
         }
@@ -650,21 +668,36 @@ function setupEventListeners() {
     if (signOutBtn) {
         signOutBtn.addEventListener('click', function () {
             const action = this.dataset.action;
-            if (action === 'signin') {
-                frappe.confirm(
-                    'Are you sure you want to sign-in?',
-                    function() {
-                        handleSignIn();
+            const actionLabel = action === 'signin' ? 'Sign In' : 'Sign Out';
+            
+            let d = new frappe.ui.Dialog({
+                title: 'Tell us your work location.',
+                fields: [
+                    {
+                        label: 'Enter ' + actionLabel + ' Location',
+                        fieldname: 'location',
+                        fieldtype: 'Select',
+                        options: 'Client Location\nOffice\nOn-Duty\nWork From Home',
+                        reqd: 1
+                    },
+                    {
+                        label: 'Remarks',
+                        fieldname: 'remarks',
+                        fieldtype: 'Small Text',
+                        placeholder: 'Enter Reason'
                     }
-                );
-            } else if (action === 'signout') {
-                frappe.confirm(
-                    'Are you sure you want to sign-out?',
-                    function() {
-                        handleSignOut();
+                ],
+                primary_action_label: actionLabel,
+                primary_action(values) {
+                    d.hide();
+                    if (action === 'signin') {
+                        handleSignIn(values.location, values.remarks);
+                    } else if (action === 'signout') {
+                        handleSignOut(values.location, values.remarks);
                     }
-                );
-            }
+                }
+            });
+            d.show();
         });
     }
 

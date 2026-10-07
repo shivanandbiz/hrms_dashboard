@@ -87,8 +87,27 @@ def get_attendance_status():
         return {"error": str(e)}
 
 
+def ensure_custom_fields():
+    if not frappe.db.has_column("Employee Checkin", "custom_work_location"):
+        current_user = frappe.session.user
+        try:
+            frappe.set_user("Administrator")
+            from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+            custom_fields = {
+                "Employee Checkin": [
+                    dict(fieldname="custom_work_location", label="Work Location", fieldtype="Select", options="Client Location\nOffice\nOn-Duty\nWork From Home", insert_after="device_id"),
+                    dict(fieldname="custom_remarks", label="Remarks", fieldtype="Small Text", insert_after="custom_work_location")
+                ]
+            }
+            create_custom_fields(custom_fields)
+            frappe.clear_cache(doctype="Employee Checkin")
+        except Exception as e:
+            frappe.log_error(f"Error creating custom fields: {str(e)}")
+        finally:
+            frappe.set_user(current_user)
+
 @frappe.whitelist()
-def clock_in():
+def clock_in(location=None, remarks=None):
     """Clock in using ERPNext Employee Checkin"""
     try:
         user = frappe.session.user
@@ -112,13 +131,17 @@ def clock_in():
         if existing_checkin:
             return {"error": "Already checked in today", "already_checked_in": True}
         
+        ensure_custom_fields()
+
         # Create Employee Checkin record
         checkin = frappe.get_doc({
             "doctype": "Employee Checkin",
             "employee": employee,
             "log_type": "IN",
             "time": now_datetime(),
-            "device_id": "HRMS Dashboard"
+            "device_id": "HRMS Dashboard",
+            "custom_work_location": location,
+            "custom_remarks": remarks
         })
         checkin.insert()
         frappe.db.commit()
@@ -136,7 +159,7 @@ def clock_in():
 
 
 @frappe.whitelist()
-def clock_out():
+def clock_out(location=None, remarks=None):
     """Clock out using ERPNext Employee Checkin"""
     try:
         user = frappe.session.user
@@ -174,13 +197,17 @@ def clock_out():
         if checkout_record:
             return {"error": "Already checked out today", "already_checked_out": True}
         
+        ensure_custom_fields()
+
         # Create Employee Checkin record for OUT
         checkout = frappe.get_doc({
             "doctype": "Employee Checkin",
             "employee": employee,
             "log_type": "OUT",
             "time": now_datetime(),
-            "device_id": "HRMS Dashboard"
+            "device_id": "HRMS Dashboard",
+            "custom_work_location": location,
+            "custom_remarks": remarks
         })
         checkout.insert()
         frappe.db.commit()
